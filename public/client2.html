@@ -14,29 +14,19 @@
     <input type='button' value='Chat' id='fire' />
     <script src='/faye/client.js'></script>
     <script>
-      var $chat = $('#chat');
-      $('#fire').on('click',null, function() {
-        var url = 'http://localhost:3000/message';
-
-        var message = {message: 'Client 2: ' + $chat.val()};
-        var dataType = 'json';
-        $.ajax({
-          type: 'POST',
-          url: url,
-          data: message,
-          dataType: dataType,
-        });
-        $chat.val('');
-      });
       var client = new Faye.Client('/faye',{
         timeout: 20
+      });
+
+      var $chat = $('#chat');
+      $('#fire').on('click',null, function() {
+        client.publish('/channel', {text: 'Client 2: ' + $chat.val()});
+        $chat.val('');
       });
 
       client.subscribe('/channel', function(message) {
         $('#messages').append('<p>' + message.text + '</p>');
       });
-
-
     </script>
     </section>
   </body>
